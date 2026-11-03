@@ -75,7 +75,7 @@ function day(e){
   const deep = () => `<h2>شرح الأبيات بيتًا بيتًا</h2>${e.verses.map((v,i) => { const d = (e.deep||[])[i] || {}; return `<div class="dv"><h3>البيت ${i+1}</h3>${vh(v,i)}
     ${d.words&&d.words.length?`<h3>غريب الكلام</h3>${props(d.words.map(x=>({label:x.w,value:x.m})))}`:""}
     ${d.meaning?`<h3>المعنى</h3><p>${esc(d.meaning)}</p>`:""}
-    ${d.notes?`<h3>بلاغة وإعراب</h3><p>${esc(d.notes)}</p>`:""}</div>`; }).join("")}
+    ${d.notes?`<h3>البلاغة</h3><p>${esc(d.notes)}</p>`:""}</div>`; }).join("")}
   <h2>السياق</h2>${props(e.info)}<p>${esc(e.idea)}</p>
   <h2>مصادر هذا اليوم</h2>${links(e.sources)}`;
   const setMode = m => { localStorage.setItem("mode", m); document.getElementById("body").innerHTML = m==="deep"&&e.deep ? deep() : brief();
