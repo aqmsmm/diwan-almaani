@@ -61,6 +61,7 @@ function day(e){
   <a class="btn" href="#">→ رجوع إلى الأيام</a>
   <h2 style="margin-top:4px">${esc(e.day)}: ${esc(e.theme)}، ${esc(e.poet)}</h2>${e.date?`<p class="sub">${esc(e.date)}</p>`:""}
   ${e.audio?`<div class="player"><audio id="au" controls preload="metadata" src="${esc(e.audio)}"></audio><p class="note">تظليل البيت أثناء القراءة تقريبي.${e.drive?` <a href="${esc(e.drive)}" target="_blank" rel="noopener">نسخة Drive</a>`:""}</p></div>`:""}
+  ${e.lesson?`<div class="dv"><h3>🎧 الدرس الصوتي</h3><p class="note">شرح مسموع للأبيات بيتًا بيتًا، يناسب السيارة والمشي.</p><audio controls preload="none" style="width:100%" src="${esc(e.lesson)}"></audio></div>`:""}
   <div class="tg"><button id="bB">الشرح المختصر</button><button id="bD">الشرح المفصّل</button></div>
   <div id="body"></div>
   <a class="btn" href="#">→ رجوع إلى الأيام</a></div>`;

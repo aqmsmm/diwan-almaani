@@ -229,6 +229,7 @@ window.ENTRIES = [
  {
   "day": "اليوم الثاني",
   "audio": "audio/2.mp3",
+  "lesson": "lessons/2.mp3",
   "date": "٢ نوفمبر ٢٠٢٦",
   "poet": "امرؤ القيس",
   "theme": "الأطلال",
