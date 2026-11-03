@@ -33,6 +33,8 @@ dt{font-weight:600;min-width:9em}dd{margin:0;flex:1}
 blockquote{font-family:Amiri,serif;font-size:1.15rem;margin:8px 0;padding:6px 14px;border-right:3px solid var(--acc)}
 blockquote cite{display:block;font-family:"Noto Naskh Arabic",serif;font-size:.8rem;color:var(--mut);font-style:normal}
 ol li{margin:4px 0}
+.tg{display:flex;gap:6px;margin:14px 0 0}.tg button{flex:1;padding:8px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);font:inherit;cursor:pointer}.tg button.act{background:var(--acc);color:var(--bg);border-color:var(--acc)}
+.dv{border:1px solid var(--line);border-radius:12px;padding:6px 12px 10px;margin:12px 0;background:var(--card)}.dv h3{font-size:.95rem;color:var(--mut);margin:8px 0 2px}.dv p{margin:2px 0}
 .src a{color:var(--acc)}
 </style>
 </head>
@@ -59,20 +61,33 @@ function day(e){
   <a class="btn" href="#">→ رجوع إلى الأيام</a>
   <h2 style="margin-top:4px">${esc(e.day)}: ${esc(e.theme)}، ${esc(e.poet)}</h2>${e.date?`<p class="sub">${esc(e.date)}</p>`:""}
   ${e.audio?`<div class="player"><audio id="au" controls preload="metadata" src="${esc(e.audio)}"></audio><p class="note">تظليل البيت أثناء القراءة تقريبي.${e.drive?` <a href="${esc(e.drive)}" target="_blank" rel="noopener">نسخة Drive</a>`:""}</p></div>`:""}
-  <h2>الأبيات</h2>${e.verses.map((v,i) => `<div class="verse" id="v${i}">${v.split("…").map(h => `<span>${esc(h.trim())}</span>`).join("")}</div>`).join("")}
+  <div class="tg"><button id="bB">الشرح المختصر</button><button id="bD">الشرح المفصّل</button></div>
+  <div id="body"></div>
+  <a class="btn" href="#">→ رجوع إلى الأيام</a></div>`;
+  const vh = (v,i) => `<div class="verse" id="v${i}">${v.split("…").map(h => `<span>${esc(h.trim())}</span>`).join("")}</div>`;
+  const brief = () => `<h2>الأبيات</h2>${e.verses.map(vh).join("")}
   <h2>عن القصيدة</h2>${props(e.info)}
   <h2>الفكرة</h2><p>${esc(e.idea)}</p>
   <h2>غريب الكلام</h2>${props(e.glossary)}
   <h2>المقصد</h2><ol>${e.meaning.map(m => `<li>${esc(m)}</li>`).join("")}</ol>
   <h2>أبيات مشابهة</h2>${e.similar.map(s => `<blockquote>${esc(s.text)}<cite>${esc(s.cite)}</cite></blockquote>`).join("")}
-  <h2>مصادر هذا اليوم</h2>${links(e.sources)}
-  <a class="btn" href="#">→ رجوع إلى الأيام</a></div>`;
+  <h2>مصادر هذا اليوم</h2>${links(e.sources)}`;
+  const deep = () => `<h2>شرح الأبيات بيتًا بيتًا</h2>${e.verses.map((v,i) => { const d = (e.deep||[])[i] || {}; return `<div class="dv"><h3>البيت ${i+1}</h3>${vh(v,i)}
+    ${d.words&&d.words.length?`<h3>غريب الكلام</h3>${props(d.words.map(x=>({label:x.w,value:x.m})))}`:""}
+    ${d.meaning?`<h3>المعنى</h3><p>${esc(d.meaning)}</p>`:""}
+    ${d.notes?`<h3>بلاغة وإعراب</h3><p>${esc(d.notes)}</p>`:""}</div>`; }).join("")}
+  <h2>السياق</h2>${props(e.info)}<p>${esc(e.idea)}</p>
+  <h2>مصادر هذا اليوم</h2>${links(e.sources)}`;
+  const setMode = m => { localStorage.setItem("mode", m); document.getElementById("body").innerHTML = m==="deep"&&e.deep ? deep() : brief();
+    document.getElementById("bB").classList.toggle("act", m!=="deep"); document.getElementById("bD").classList.toggle("act", m==="deep"); hl(); };
+  document.getElementById("bB").onclick = () => setMode("brief");
+  document.getElementById("bD").onclick = () => setMode("deep");
   const au = document.getElementById("au");
-  if (au) au.addEventListener("timeupdate", () => {
-    if (!au.duration) return;
+  function hl(){ if (!au || !au.duration) return;
     const n = e.verses.length, k = au.paused && au.currentTime === 0 ? -1 : Math.min(n-1, Math.floor(au.currentTime / au.duration * n));
-    for (let i=0;i<n;i++) document.getElementById("v"+i).classList.toggle("on", i===k);
-  });
+    for (let i=0;i<n;i++) document.getElementById("v"+i).classList.toggle("on", i===k); }
+  setMode(localStorage.getItem("mode") || "brief");
+  if (au) au.addEventListener("timeupdate", hl);
   window.scrollTo(0,0);
 }
 function route(){
