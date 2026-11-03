@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ديوان المعاني</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#faf7f0;--card:#fff;--ink:#222;--mut:#6b6458;--line:#e4dccb;--acc:#8a5a14;--hi:#f6e7c4}
+@media (prefers-color-scheme:dark){:root{--bg:#16140f;--card:#211e17;--ink:#eee8da;--mut:#a99f8c;--line:#3a3428;--acc:#e0b25e;--hi:#4a3b1c}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Naskh Arabic",serif;line-height:1.8}
+header{padding:20px 16px 8px;max-width:1200px;margin:auto}
+h1{font-family:Amiri,serif;margin:0;font-size:2rem}
+.sub{color:var(--mut);margin:0}
+main{max-width:1200px;margin:auto;padding:8px 16px 48px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.card{display:block;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.card:hover{border-color:var(--acc)}
+.card b{display:block}.card small{display:block;color:var(--mut);font-size:.8rem}
+.card .op{font-family:Amiri,serif;color:var(--mut);font-size:.9rem}
+.btn{display:inline-block;margin:12px 0;padding:6px 14px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);text-decoration:none;font:inherit;cursor:pointer}
+.day{max-width:760px;margin:auto}
+.player{position:sticky;top:0;z-index:5;background:var(--bg);padding:8px 0;border-bottom:1px solid var(--line)}
+.player audio{width:100%}
+.note{color:var(--mut);font-size:.8rem;margin:2px 0 0}
+h2{font-family:Amiri,serif;font-size:1.4rem;margin:28px 0 8px;color:var(--acc)}
+.verse{font-family:Amiri,serif;font-size:1.3rem;padding:8px 12px;border-radius:10px;margin:4px 0;display:flex;flex-wrap:wrap;gap:0 2em;justify-content:center;text-align:center;transition:background .3s}
+.verse.on{background:var(--hi)}
+dl{margin:0}dl div{display:flex;flex-wrap:wrap;gap:4px 12px;padding:6px 0;border-bottom:1px solid var(--line)}
+dt{font-weight:600;min-width:9em}dd{margin:0;flex:1}
+blockquote{font-family:Amiri,serif;font-size:1.15rem;margin:8px 0;padding:6px 14px;border-right:3px solid var(--acc)}
+blockquote cite{display:block;font-family:"Noto Naskh Arabic",serif;font-size:.8rem;color:var(--mut);font-style:normal}
+ol li{margin:4px 0}
+.src a{color:var(--acc)}
+</style>
+</head>
+<body>
+<header><h1>ديوان المعاني</h1><p class="sub">مقطع شعري موثّق كل يوم، بالشرح والصوت.</p></header>
+<main id="app"></main>
+<script src="data/entries.js"></script>
+<script>
+const E = window.ENTRIES, app = document.getElementById("app");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const opening = v => v.split("…")[0].trim().split(" ").slice(0,3).join(" ") + "…";
+const props = a => "<dl>" + a.map(p => `<div><dt>${esc(p.label)}</dt><dd>${esc(p.value)}</dd></div>`).join("") + "</dl>";
+const links = a => "<ul class='src'>" + a.map(s => `<li><a href="${esc(s.href)}" target="_blank" rel="noopener">${esc(s.title)}</a> · ${esc(s.site)}</li>`).join("") + "</ul>";
+function home(){
+  app.innerHTML = `<div class="grid">${E.map(e => `<a class="card" href="#day-${e.id}"><b>${esc(e.day)}</b>${e.date?`<small>${esc(e.date)}</small>`:""}<span>${esc(e.poet)}</span><small>${esc(e.theme)}${e.audio?" · بصوتك":""}</small><span class="op">«${esc(opening(e.verses[0]))}»</span></a>`).join("")}</div><a class="btn" href="#sources">كل المصادر</a>`;
+}
+function sources(){
+  const seen = new Set(), all = [];
+  E.forEach(e => e.sources.forEach(s => { if(!seen.has(s.href)){ seen.add(s.href); all.push(s); } }));
+  app.innerHTML = `<div class="day"><a class="btn" href="#">→ رجوع إلى الأيام</a><h2>المصادر</h2>${links(all)}</div>`;
+}
+function day(e){
+  app.innerHTML = `<div class="day">
+  <a class="btn" href="#">→ رجوع إلى الأيام</a>
+  <h2 style="margin-top:4px">${esc(e.day)}: ${esc(e.theme)}، ${esc(e.poet)}</h2>${e.date?`<p class="sub">${esc(e.date)}</p>`:""}
+  ${e.audio?`<div class="player"><audio id="au" controls preload="metadata" src="${esc(e.audio)}"></audio><p class="note">تظليل البيت أثناء القراءة تقريبي.${e.drive?` <a href="${esc(e.drive)}" target="_blank" rel="noopener">نسخة Drive</a>`:""}</p></div>`:""}
+  <h2>الأبيات</h2>${e.verses.map((v,i) => `<div class="verse" id="v${i}">${v.split("…").map(h => `<span>${esc(h.trim())}</span>`).join("")}</div>`).join("")}
+  <h2>عن القصيدة</h2>${props(e.info)}
+  <h2>الفكرة</h2><p>${esc(e.idea)}</p>
+  <h2>غريب الكلام</h2>${props(e.glossary)}
+  <h2>المقصد</h2><ol>${e.meaning.map(m => `<li>${esc(m)}</li>`).join("")}</ol>
+  <h2>أبيات مشابهة</h2>${e.similar.map(s => `<blockquote>${esc(s.text)}<cite>${esc(s.cite)}</cite></blockquote>`).join("")}
+  <h2>مصادر هذا اليوم</h2>${links(e.sources)}
+  <a class="btn" href="#">→ رجوع إلى الأيام</a></div>`;
+  const au = document.getElementById("au");
+  if (au) au.addEventListener("timeupdate", () => {
+    if (!au.duration) return;
+    const n = e.verses.length, k = au.paused && au.currentTime === 0 ? -1 : Math.min(n-1, Math.floor(au.currentTime / au.duration * n));
+    for (let i=0;i<n;i++) document.getElementById("v"+i).classList.toggle("on", i===k);
+  });
+  window.scrollTo(0,0);
+}
+function route(){
+  const h = location.hash, m = h.match(/^#day-(\d+)$/);
+  const e = m && E.find(x => x.id === Number(m[1]));
+  if (e) day(e); else if (h === "#sources") sources(); else home();
+}
+addEventListener("hashchange", route); route();
+</script>
+</body>
+</html>
