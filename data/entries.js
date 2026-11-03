@@ -385,7 +385,8 @@ window.ENTRIES = [
     "href": "https://shamela.ws/book/11253/143",
     "by": "الزوزني"
    }
-  ]
+  ],
+  "lesson": "lessons/1.mp3"
  },
  {
   "day": "اليوم الثاني",
@@ -1314,7 +1315,8 @@ window.ENTRIES = [
     "href": "https://fargad.sa/?p=28500",
     "by": "مجلة فرقد الإبداعية"
    }
-  ]
+  ],
+  "lesson": "lessons/3.mp3"
  },
  {
   "day": "اليوم الرابع",
@@ -1674,6 +1676,7 @@ window.ENTRIES = [
     "href": "https://habibaellamey.wordpress.com/2020/12/22/a-poem-by-jamil-buthaina/",
     "by": "حبيبة اللامي (مدونة)"
    }
-  ]
+  ],
+  "lesson": "lessons/4.mp3"
  }
 ];
